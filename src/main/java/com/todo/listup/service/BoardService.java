@@ -7,13 +7,17 @@ import com.todo.listup.request.BoardUpdateRequest;
 import com.todo.listup.response.BoardGetResponse;
 import com.todo.listup.response.BoardPostResponse;
 import com.todo.listup.response.BoardUpdateResponse;
+import com.todo.listup.vo.Search;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,36 +27,44 @@ public class BoardService {
   private final BoardRepository boardRepository;
   ModelMapper modelMapper = new ModelMapper();
 
-  public ResponseEntity<?> getBoardById(Long id) {
+  public BoardGetResponse getBoardById(Long id) {
     Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     BoardGetResponse response = modelMapper.map(board, BoardGetResponse.class);
-
-    return ResponseEntity.ok(response);
+    return response;
   }
 
   @Transactional
-  public ResponseEntity<?> createBoard(BoardPostRequest request) {
+  public Long createBoard(BoardPostRequest request) {
     Board board = new Board(request.getTitle(), request.getContents());
-    Board savedBoard = boardRepository.save(board);
-    BoardPostResponse response = modelMapper.map(savedBoard, BoardPostResponse.class);
-
-    return ResponseEntity.ok(response);
+    Long id = boardRepository.save(board).getId();
+    return id;
   }
 
   @Transactional
-  public ResponseEntity<?> updateBoard(Long id, BoardUpdateRequest request) {
+  public Long updateBoard(Long id, BoardUpdateRequest request) {
     Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     board.updateBoard(request.getTitle(), request.getContents());
-    BoardUpdateResponse response = modelMapper.map(id, BoardUpdateResponse.class);
-
-    return ResponseEntity.ok(response);
+    return id;
   }
 
   @Transactional
-  public ResponseEntity<?> deleteBoard(Long id) {
+  public Long deleteBoard(Long id) {
     Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     board.deleteBoard();
 
-    return ResponseEntity.ok(id);
+    return id;
+  }
+
+  public List<BoardGetResponse> getPage(Search search) {
+    Page<Board> boardPage = boardRepository.getPage(search);
+
+    List<BoardGetResponse> responseList = boardPage.getContent().stream().map(board -> BoardGetResponse.builder()
+        .title(board.getTitle())
+        .contents(board.getContents())
+        .id(board.getId())
+        .build()).collect(Collectors.toList());
+
+    return responseList;
+
   }
 }

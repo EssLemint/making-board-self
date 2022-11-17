@@ -1,10 +1,10 @@
 package com.todo.listup.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.todo.listup.request.BoardPostRequest;
 import com.todo.listup.request.BoardUpdateRequest;
 import com.todo.listup.service.BoardService;
+import com.todo.listup.vo.Search;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -37,12 +36,6 @@ class BoardControllerTest {
 
   @Autowired
   private BoardService boardService;
-
-  @BeforeAll
-  public void setUp() {
-
-  }
-
 
   @Test
   @DisplayName("게시글 생성")
@@ -68,26 +61,46 @@ class BoardControllerTest {
 
     log.info("======== 게시글 조회 =========");
 
-    MvcResult mvcResult = mvc.perform(post("/create/board")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(mapper.writeValueAsString(BoardPostRequest
-                .builder()
-                .title("test-title")
-                .contents("test-contents")
-                .build())))
-        .andExpect(status().isOk())
-        .andReturn();
+    Long boardId = boardService.createBoard(BoardPostRequest.builder()
+        .contents("TEST-CONTENTS")
+        .title("TEST-TITLE")
+        .build());
 
-    log.info("mvcResult = {}", mvcResult.getResponse().getContentAsString());
-    JsonNode jsonNode = mapper.readTree(mvcResult.getResponse().getContentAsString());
-    long id = jsonNode.get("id").asLong();
-
-    mvc.perform(get("/get/board/{id}", id)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
+    mvc.perform(get("/get/board/{id}", boardId)
+            .contentType(MediaType.APPLICATION_JSON))
         .andDo(print());
 
     log.info("========== 게시글 조회 ==========");
+  }
+
+  @Test
+  @DisplayName("게시판 조회")
+  void getBoard() throws Exception {
+    for (int i = 1; i < 11; i++) {
+      boardService.createBoard(BoardPostRequest.builder()
+          .contents("TEST-CONTENTS" + i)
+          .title("TEST-TITLE" + i)
+          .build());
+    }
+
+    Search search = new Search();
+      search.setPage(3);
+      search.setSize(2);
+      search.setSearchType("title");
+      search.setSearchWord("T");
+
+//      mvc.perform(get("/get/board", search)
+//              .contentType(MediaType.APPLICATION_JSON))
+//          .andDo(print());
+
+    mvc.perform(get("/get/board")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .param("page", "3")
+            .param("size", "2")
+            .param("searchWord", "T")
+            .param("searchType", "title"))
+        .andDo(print());
   }
 
   @Test
@@ -96,25 +109,16 @@ class BoardControllerTest {
 
     log.info("======== 게시글 수정 =========");
 
-    MvcResult mvcResult = mvc.perform(post("/create/board")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(mapper.writeValueAsString(BoardPostRequest
-                .builder()
-                .title("test-title")
-                .contents("test-contents")
-                .build())))
-        .andExpect(status().isOk())
-        .andReturn();
+    Long boardId = boardService.createBoard(BoardPostRequest.builder()
+        .contents("TEST-CONTENTS")
+        .title("TEST-TITLE")
+        .build());
 
-    JsonNode jsonNode = mapper.readTree(mvcResult.getResponse().getContentAsString());
-    long id = jsonNode.get("id").asLong();
-
-    mvc.perform(put("/update/board/{id}", id)
+    mvc.perform(put("/update/board/{id}", boardId)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(mapper.writeValueAsString(BoardUpdateRequest
-                .builder()
-                .title("TITLE-UPDATE")
-                .contents("CONTENTS-UPDATE")
+            .content(mapper.writeValueAsString(BoardUpdateRequest.builder()
+                .title("TEST_UPDATE-TITLE")
+                .contents("TEST_UPDATE-CONTENTS")
                 .build())))
         .andExpect(status().isOk())
         .andDo(print());
@@ -125,20 +129,12 @@ class BoardControllerTest {
   @Test
   @DisplayName("게시글 삭제")
   void deleteBoard() throws Exception{
-    MvcResult mvcResult = mvc.perform(post("/create/board")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(mapper.writeValueAsString(BoardPostRequest
-                .builder()
-                .title("test-title")
-                .contents("test-contents")
-                .build())))
-        .andExpect(status().isOk())
-        .andReturn();
+    Long boardId = boardService.createBoard(BoardPostRequest.builder()
+        .contents("TEST-CONTENTS")
+        .title("TEST-TITLE")
+        .build());
 
-    JsonNode jsonNode = mapper.readTree(mvcResult.getResponse().getContentAsString());
-    long id = jsonNode.get("id").asLong();
-
-    mvc.perform(delete("/delete/board/{id}", id)
+    mvc.perform(delete("/delete/board/{id}", boardId)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andDo(print());
