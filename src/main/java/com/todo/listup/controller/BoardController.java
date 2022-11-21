@@ -8,9 +8,12 @@ import com.todo.listup.response.BoardUpdateResponse;
 import com.todo.listup.service.BoardService;
 import com.todo.listup.vo.Search;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -32,9 +35,11 @@ public class BoardController {
     return ResponseEntity.ok(responseList);
   }
 
-  @PostMapping("/create/board")
-  public ResponseEntity<?> createBoard(@RequestBody BoardPostRequest request) {
-    Long boardId = boardService.createBoard(request);
+  @PostMapping(value = "/create/board",
+      consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+  public ResponseEntity<?> createBoard(@RequestPart BoardPostRequest request,
+                                       @RequestPart("files")  MultipartFile[] files) throws IOException {
+    Long boardId = boardService.createBoard(request, files);
     return ResponseEntity.ok(boardId);
   }
 
@@ -49,7 +54,6 @@ public class BoardController {
     Long boardId = boardService.deleteBoard(id);
     return ResponseEntity.ok(boardId);
   }
-
 
 
 }

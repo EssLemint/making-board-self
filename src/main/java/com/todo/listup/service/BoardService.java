@@ -1,31 +1,44 @@
 package com.todo.listup.service;
 
 import com.todo.listup.entity.Board;
+import com.todo.listup.entity.Images;
 import com.todo.listup.repository.BoardRepository;
+import com.todo.listup.repository.ImageRespository;
+import com.todo.listup.request.BoardImgRequest;
 import com.todo.listup.request.BoardPostRequest;
 import com.todo.listup.request.BoardUpdateRequest;
 import com.todo.listup.response.BoardGetResponse;
-import com.todo.listup.response.BoardPostResponse;
-import com.todo.listup.response.BoardUpdateResponse;
 import com.todo.listup.vo.Search;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class BoardService {
 
   private final BoardRepository boardRepository;
+  private final ImageRespository imageRespository;
+
   ModelMapper modelMapper = new ModelMapper();
+
+  @Value("${spring.servlet.multipart.location}")
+  private String fileDir;
+
 
   public BoardGetResponse getBoardById(Long id) {
     Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
@@ -34,9 +47,33 @@ public class BoardService {
   }
 
   @Transactional
-  public Long createBoard(BoardPostRequest request) {
+  public Long createBoard(BoardPostRequest request,
+                          MultipartFile[] multipartFile) throws IOException {
     Board board = new Board(request.getTitle(), request.getContents());
     Long id = boardRepository.save(board).getId();
+
+    log.info("multipartFile = {}", multipartFile);
+    if (!Objects.isNull(multipartFile)) {
+      for (MultipartFile file : multipartFile) {
+        String originalFilename = file.getOriginalFilename();
+        log.info("originalFilename = {}", originalFilename);
+
+        long size = file.getSize();
+        log.info("size = {}", size);
+
+        String contentType = file.getContentType();
+        log.info("contentType = {}", contentType);
+
+        String fullPath = fileDir + originalFilename;
+        log.info("fullPath = {}", fullPath);
+
+        Images images = new Images(originalFilename, originalFilename, fullPath, size, contentType);
+        images.setBoard(board);
+        imageRespository.save(images);
+
+        file.transferTo(new File(fullPath));
+      }
+    }
     return id;
   }
 
