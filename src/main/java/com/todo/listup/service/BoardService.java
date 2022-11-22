@@ -4,25 +4,30 @@ import com.todo.listup.entity.Board;
 import com.todo.listup.entity.Images;
 import com.todo.listup.repository.BoardRepository;
 import com.todo.listup.repository.ImageRespository;
-import com.todo.listup.request.BoardImgRequest;
 import com.todo.listup.request.BoardPostRequest;
 import com.todo.listup.request.BoardUpdateRequest;
 import com.todo.listup.response.BoardGetResponse;
+import com.todo.listup.response.BoardImgResponse;
 import com.todo.listup.vo.Search;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriUtils;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -67,7 +72,10 @@ public class BoardService {
         String fullPath = fileDir + originalFilename;
         log.info("fullPath = {}", fullPath);
 
-        Images images = new Images(originalFilename, originalFilename, fullPath, size, contentType);
+        String uuid = UUID.randomUUID().toString();
+        String uploadFileName = uuid + contentType;
+
+        Images images = new Images(originalFilename, uploadFileName, fullPath, size, contentType);
         images.setBoard(board);
         imageRespository.save(images);
 
@@ -103,5 +111,26 @@ public class BoardService {
 
     return responseList;
 
+  }
+
+  public BoardImgResponse downloadImages(Long id) throws MalformedURLException {
+    Images images = imageRespository.findById(id).orElseThrow(EntityNotFoundException::new);
+    BoardImgResponse response = new BoardImgResponse();
+
+    if (!Objects.isNull(images)) {
+      String storedFileName = images.getStoredFileName();
+      String uploadFileName = images.getUploadFileName();
+
+      UrlResource urlResource = new UrlResource("file:" + fileDir + storedFileName);
+      log.info("urlResource = {}", urlResource);
+
+      String encodingUploadFileName = UriUtils.encode(uploadFileName, StandardCharsets.UTF_8);
+      String contentDisposition = "attachment; filename=\"" + encodingUploadFileName + "\"";
+      log.info("contentDisposition = {}", contentDisposition);
+
+      response.setContents(contentDisposition);
+      response.setUrlResources(urlResource);
+    }
+    return response;
   }
 }
