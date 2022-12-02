@@ -1,12 +1,11 @@
 package com.todo.listup.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.todo.listup.request.BoardPostRequest;
-import com.todo.listup.request.BoardUpdateRequest;
+import com.todo.listup.dto.board.request.BoardPostRequest;
+import com.todo.listup.dto.board.request.BoardUpdateRequest;
 import com.todo.listup.service.BoardService;
 import com.todo.listup.vo.Search;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

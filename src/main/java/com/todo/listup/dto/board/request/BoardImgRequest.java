@@ -1,4 +1,4 @@
-package com.todo.listup.request;
+package com.todo.listup.dto.board.request;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,9 +1,9 @@
 package com.todo.listup.controller;
 
-import com.todo.listup.request.BoardPostRequest;
-import com.todo.listup.request.BoardUpdateRequest;
-import com.todo.listup.response.BoardGetResponse;
-import com.todo.listup.response.BoardImgResponse;
+import com.todo.listup.dto.board.request.BoardPostRequest;
+import com.todo.listup.dto.board.request.BoardUpdateRequest;
+import com.todo.listup.dto.board.response.BoardGetResponse;
+import com.todo.listup.dto.board.response.BoardImgResponse;
 import com.todo.listup.service.BoardService;
 import com.todo.listup.vo.Search;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 @RestController
 @RequiredArgsConstructor

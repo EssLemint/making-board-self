@@ -1,4 +1,4 @@
-package com.todo.listup.response;
+package com.todo.listup.dto.board.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

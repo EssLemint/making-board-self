@@ -1,15 +1,14 @@
-package com.todo.listup.request;
+package com.todo.listup.dto.board.response;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.core.io.UrlResource;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardPostRequest {
-  private String title;
+public class BoardImgResponse {
   private String contents;
+  private UrlResource urlResources;
 }

@@ -1,4 +1,4 @@
-package com.todo.listup.request.member.request;
+package com.todo.listup.dto.member.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberPutRequest {
-
+public class MemberGetResponse {
   private String userId;
   private String userPassword;
   private String userName;

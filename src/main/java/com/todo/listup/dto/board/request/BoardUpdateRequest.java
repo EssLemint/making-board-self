@@ -1,19 +1,17 @@
-package com.todo.listup.response;
+package com.todo.listup.dto.board.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardGetResponse {
-  private Long id;
+public class BoardUpdateRequest {
+
   private String title;
   private String contents;
+
 }

@@ -1,10 +1,11 @@
 package com.todo.listup.service;
 
+import com.todo.listup.dto.member.request.MemberLoginRequest;
 import com.todo.listup.entity.Member;
 import com.todo.listup.repository.MemberRepository;
-import com.todo.listup.request.member.response.MemberGetResponse;
-import com.todo.listup.request.member.request.MemberPostRequest;
-import com.todo.listup.request.member.request.MemberPutRequest;
+import com.todo.listup.dto.member.response.MemberGetResponse;
+import com.todo.listup.dto.member.request.MemberPostRequest;
+import com.todo.listup.dto.member.request.MemberPutRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -53,4 +56,12 @@ public class MemberService {
     return id;
   }
 
+  public Long loginMember(MemberLoginRequest request) throws Exception {
+    Member member = memberRepository.findMemberByIdAndPassword(request.getUserId(), request.getUserPassword());
+    Long memberId = 0L;
+    if (!Objects.isNull(member)) {
+      memberId = member.getId();
+    }
+    return memberId;
+  }
 }

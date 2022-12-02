@@ -1,8 +1,10 @@
-package com.todo.listup.member;
+package com.todo.listup.controller;
 
-import com.todo.listup.request.member.request.MemberPutRequest;
-import com.todo.listup.request.member.response.MemberGetResponse;
-import com.todo.listup.request.member.request.MemberPostRequest;
+import com.todo.listup.dto.member.request.MemberLoginRequest;
+import com.todo.listup.dto.member.request.MemberPutRequest;
+import com.todo.listup.dto.member.response.MemberGetResponse;
+import com.todo.listup.dto.member.request.MemberPostRequest;
+import com.todo.listup.entity.Member;
 import com.todo.listup.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +35,15 @@ public class MemberController {
     return ResponseEntity.ok(memberId);
   }
 
-  @DeleteMapping("delete/member")
+  @DeleteMapping("/delete/member")
   public ResponseEntity<?> deleteMember(@PathVariable Long id) {
     Long memberId = memberService.deleteMember(id);
+    return ResponseEntity.ok(memberId);
+  }
+
+  @GetMapping("/login/member")
+  public ResponseEntity<?> loginMember(@RequestBody @Valid MemberLoginRequest request) throws Exception {
+    Long memberId = memberService.loginMember(request);
     return ResponseEntity.ok(memberId);
   }
 
