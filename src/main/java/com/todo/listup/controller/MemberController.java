@@ -4,13 +4,17 @@ import com.todo.listup.dto.member.request.MemberLoginRequest;
 import com.todo.listup.dto.member.request.MemberPutRequest;
 import com.todo.listup.dto.member.response.MemberGetResponse;
 import com.todo.listup.dto.member.request.MemberPostRequest;
-import com.todo.listup.entity.Member;
 import com.todo.listup.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,9 +46,25 @@ public class MemberController {
   }
 
   @GetMapping("/login/member")
-  public ResponseEntity<?> loginMember(@RequestBody @Valid MemberLoginRequest request) throws Exception {
+  public ResponseEntity<?> loginMember(@RequestBody @Valid MemberLoginRequest request,
+                                       BindingResult bindingResult,
+                                       HttpServletRequest httpRequest) throws Exception {
+    if (bindingResult.hasErrors()) {
+      return ResponseEntity.badRequest().body(bindingResult);
+    }
     Long memberId = memberService.loginMember(request);
-    return ResponseEntity.ok(memberId);
+    HttpSession session = httpRequest.getSession();
+    session.setAttribute("memberId", memberId);
+    return ResponseEntity.ok(200);
+  }
+
+  @GetMapping("/logout/member")
+  public ResponseEntity<?> logoutMember(HttpServletRequest httpRequest) {
+    HttpSession session = httpRequest.getSession();
+    if (!Objects.isNull(session)) {
+      session.removeAttribute("sessionId");
+    }
+    return ResponseEntity.ok(200);
   }
 
 }

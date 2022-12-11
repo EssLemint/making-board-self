@@ -32,7 +32,7 @@ public class BoardController {
   }
 
   @GetMapping("/get/board")
-  public ResponseEntity<?> getBoard(Search search) {
+  public ResponseEntity<?> getBoard(@CookieValue(name = "memberId")Search search) {
     List<BoardGetResponse> responseList = boardService.getPage(search);
     return ResponseEntity.ok(responseList);
   }

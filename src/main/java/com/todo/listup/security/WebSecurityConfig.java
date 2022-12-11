@@ -1,4 +1,4 @@
-package com.todo.listup.config;
+package com.todo.listup.security;
 
 //@Configuration
 //@EnableWebSecurity
@@ -7,10 +7,10 @@ package com.todo.listup.config;
 //  @Bean
 //  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 //    http
-//        .authorizeHttpRequests((requests) -> requests
-//            .antMatchers("/").permitAll()
-//            .anyRequest().authenticated()
-//        );
+//        .authorizeHttpRequests()
+//        .anyRequest().authenticated()
+//        .and()
+//        .formLogin();
 //
 //    return http.build();
 //  }
