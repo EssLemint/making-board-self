@@ -5,8 +5,10 @@ import com.todo.listup.dto.member.request.MemberPutRequest;
 import com.todo.listup.dto.member.response.MemberGetResponse;
 import com.todo.listup.dto.member.request.MemberPostRequest;
 import com.todo.listup.service.MemberService;
+import com.todo.listup.signIn.SignInRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,5 +68,4 @@ public class MemberController {
     }
     return ResponseEntity.ok(200);
   }
-
 }

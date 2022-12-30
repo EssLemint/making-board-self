@@ -15,9 +15,18 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
   @Override
   public Member findMemberByIdAndPassword(String id, String password)  {
     JPAQuery<Member> query = queryFactory.selectFrom(QMember.member)
-        .where(QMember.member.userId.eq(id)).where(QMember.member.userPassword.eq(password));
+        .where(QMember.member.userId.eq(id)).where(QMember.member.password.eq(password));
     Member member = query.fetchOne();
 
+    return member;
+  }
+
+  @Override
+  public Member findMemberByUsername(String username) {
+    JPAQuery<Member> query = queryFactory.selectFrom(QMember.member)
+        .where(QMember.member.username.eq(username));
+
+    Member member = query.fetchOne();
     return member;
   }
 }

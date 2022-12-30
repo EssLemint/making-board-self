@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MemberPutRequest {
   private String userId;
-  private String userPassword;
+  private String password;
   private String userName;
   private String email;
 }

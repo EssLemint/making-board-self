@@ -1,18 +1,21 @@
-package com.todo.listup.dto.member.request;
+package com.todo.listup.signIn;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberLoginRequest {
+public class SignInRequest {
 
   @NotEmpty
-  private String userId;
+  String userId;
+
   @NotEmpty
-  private String password;
+  String password;
 }

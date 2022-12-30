@@ -17,7 +17,7 @@ public class MemberPostRequest {
   @NotEmpty
   private String userId;
   @NotEmpty
-  private String userPassword;
+  private String password;
   @NotEmpty
   private String userName;
   @NotEmpty
