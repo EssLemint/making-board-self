@@ -3,12 +3,13 @@ package com.todo.listup.service;
 import com.todo.listup.entity.Board;
 import com.todo.listup.entity.Images;
 import com.todo.listup.repository.BoardRepository;
-import com.todo.listup.repository.ImageRespository;
+import com.todo.listup.repository.ImageRepository;
 import com.todo.listup.dto.board.request.BoardPostRequest;
 import com.todo.listup.dto.board.request.BoardUpdateRequest;
 import com.todo.listup.dto.board.response.BoardGetResponse;
 import com.todo.listup.dto.board.response.BoardImgResponse;
 import com.todo.listup.vo.Search;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -20,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriUtils;
 
-import javax.persistence.EntityNotFoundException;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
 public class BoardService {
 
   private final BoardRepository boardRepository;
-  private final ImageRespository imageRespository;
+  private final ImageRepository imageRepository;
 
   ModelMapper modelMapper = new ModelMapper();
 
@@ -57,7 +58,7 @@ public class BoardService {
     Board board = new Board(request.getTitle(), request.getContents());
     Long id = boardRepository.save(board).getId();
 
-    log.info("multipartFile = {}", multipartFile);
+    log.info("multipartFile = {}", (Object) multipartFile);
     if (!Objects.isNull(multipartFile)) {
       for (MultipartFile file : multipartFile) {
         String originalFilename = file.getOriginalFilename();
@@ -77,7 +78,7 @@ public class BoardService {
 
         Images images = new Images(originalFilename, uploadFileName, fullPath, size, contentType);
         images.setBoard(board);
-        imageRespository.save(images);
+        imageRepository.save(images);
 
         file.transferTo(new File(fullPath));
       }
@@ -114,7 +115,7 @@ public class BoardService {
   }
 
   public BoardImgResponse downloadImages(Long id) throws MalformedURLException {
-    Images images = imageRespository.findById(id).orElseThrow(EntityNotFoundException::new);
+    Images images = imageRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     BoardImgResponse response = new BoardImgResponse();
 
     if (!Objects.isNull(images)) {

@@ -6,4 +6,6 @@ public interface MemberRepositoryCustom {
   Member findMemberByIdAndPassword(String id, String password);
 
   Member findMemberByUsername(String username);
+
+  Member findByUserId(String userId);
 }

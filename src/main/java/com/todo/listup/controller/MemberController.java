@@ -23,6 +23,7 @@ import java.util.Objects;
 public class MemberController {
   private final MemberService memberService;
 
+  @Secured("ROLE_USER")
   @GetMapping("/get/member/{id}")
   public ResponseEntity<?> getMemberById(@PathVariable Long id) {
     MemberGetResponse response = memberService.getMemberById(id);

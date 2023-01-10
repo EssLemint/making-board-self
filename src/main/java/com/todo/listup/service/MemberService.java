@@ -7,19 +7,14 @@ import com.todo.listup.dto.member.response.MemberGetResponse;
 import com.todo.listup.entity.Member;
 import com.todo.listup.entity.Role;
 import com.todo.listup.repository.MemberRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.Objects;
 
 @Slf4j
@@ -31,12 +26,11 @@ public class MemberService {
   private final MemberRepository memberRepository;
   ModelMapper modelMapper = new ModelMapper();
 
-  private final BCryptPasswordEncoder bCryptPasswordEncoder;
-  private final AuthenticationManager authenticationManager;
+  private final PasswordEncoder passwordEncoder;
 
   @Transactional
   public Long createMember(MemberPostRequest request) {
-    Member member = new Member(request.getUserId(), bCryptPasswordEncoder.encode(request.getPassword())
+    Member member = new Member(request.getUserId(), passwordEncoder.encode(request.getPassword())
         , request.getUserName(), request.getEmail(), Role.ROLE_USER.name());
     Long id = memberRepository.save(member).getId();
 
